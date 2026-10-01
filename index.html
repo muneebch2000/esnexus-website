@@ -1,0 +1,383 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ESNEXUS — Understand systems. Predict what happens next.</title>
+<meta name="description" content="ESNEXUS builds intelligent products for complex digital and physical systems.">
+<style>
+:root{
+  --bg:#0a0c0c; --panel:#111414; --panel2:#151919; --paper:#f3f2ed; --ink:#0c0d0d;
+  --muted:#8d9690; --line:rgba(255,255,255,.11); --acid:#d9ff43; --cyan:#5cf0e7;
+  --red:#ff6a58; --amber:#ffc857; --radius:24px;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;background:var(--bg)}
+body{margin:0;font-family:Inter,ui-sans-serif,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:var(--bg);color:#fff;-webkit-font-smoothing:antialiased}
+a{color:inherit;text-decoration:none}
+button{font:inherit;color:inherit}
+::selection{background:var(--acid);color:#111}
+.noise{position:fixed;inset:0;pointer-events:none;z-index:999;opacity:.028;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 160 160' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.7'/%3E%3C/svg%3E")}
+.cursor-dot{position:fixed;width:10px;height:10px;border-radius:50%;background:var(--acid);pointer-events:none;z-index:1000;mix-blend-mode:difference;transform:translate(-50%,-50%);transition:width .15s,height .15s}
+@media(pointer:coarse){.cursor-dot{display:none}}
+.nav-wrap{position:fixed;top:14px;left:18px;right:18px;z-index:100}
+.nav{max-width:1520px;margin:auto;display:flex;align-items:center;justify-content:space-between;padding:10px 12px 10px 15px;border:1px solid rgba(255,255,255,.09);background:rgba(8,10,9,.68);backdrop-filter:blur(24px);border-radius:17px;box-shadow:0 16px 50px rgba(0,0,0,.18)}
+.brand{display:flex;align-items:center;gap:11px;font-weight:900;letter-spacing:-.03em;font-size:15px}
+.brandmark{width:38px;height:38px;display:grid;place-items:center;flex:0 0 38px}
+
+.nexus-symbol{position:relative;display:inline-block;width:30px;height:30px;filter:drop-shadow(0 5px 12px rgba(217,255,67,.12))}
+.nexus-symbol i{position:absolute;left:50%;top:50%;width:9px;height:28px;border-radius:3px;background:linear-gradient(180deg,#d9ff43 0 46%,#d9ff43 46% 100%);transform-origin:center}
+.nexus-symbol i:first-child{transform:translate(-70%,-50%) rotate(-34deg)}
+.nexus-symbol i:last-child{transform:translate(-30%,-50%) rotate(34deg);background:linear-gradient(180deg,#d9ff43,#b7c1b7 58%,#6f7772)}
+.brandmark .nexus-symbol{width:34px;height:34px}
+.core-symbol{width:72px;height:72px}
+.core-symbol i{width:18px;height:66px;border-radius:6px}
+
+.brand-lockup{display:flex;flex-direction:column;line-height:1}
+.brand-name{font-weight:850;letter-spacing:.12em;font-size:13px}
+.brand-company{font-size:6.5px;letter-spacing:.28em;color:#69716b;margin-top:5px;font-weight:800}
+.links{display:flex;align-items:center;gap:26px;font-size:12px;font-weight:700}
+.links>a{color:#a8afa9;transition:.2s}.links>a:hover{color:#fff}
+.cta{padding:11px 14px;border-radius:11px;background:#fff;color:#111!important}
+.menu-btn{display:none;border:0;background:none;width:42px;height:42px}
+.menu-btn i{display:block;width:21px;height:1.5px;background:#fff;margin:6px auto}
+.hero{min-height:100svh;display:grid;grid-template-columns:1.08fr .92fr;gap:4vw;align-items:center;padding:150px 6vw 72px;position:relative;overflow:hidden}
+.grid{position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,.045) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.045) 1px,transparent 1px);background-size:76px 76px;mask-image:linear-gradient(to bottom,black 0,rgba(0,0,0,.8) 65%,transparent 100%)}
+.glow{position:absolute;border-radius:50%;filter:blur(100px);opacity:.14;pointer-events:none}
+.g1{width:560px;height:560px;background:var(--acid);right:10%;top:3%}.g2{width:420px;height:420px;background:var(--cyan);right:-10%;bottom:-4%;opacity:.1}
+.hero-copy{position:relative;z-index:2;max-width:900px}
+.kicker,.label,.eyebrow{font-size:10px;letter-spacing:.16em;text-transform:uppercase;font-weight:850}
+.kicker{color:#929b94;display:flex;gap:10px;align-items:center;margin-bottom:18px}
+.hero-signature{display:flex;align-items:center;gap:10px;margin-bottom:28px;color:#5f6861;font-size:8px;font-weight:800;letter-spacing:.17em}
+.signature-line{width:34px;height:1px;background:var(--acid);opacity:.75}
+.dot{width:7px;height:7px;border-radius:50%;background:#58c877;box-shadow:0 0 0 5px rgba(88,200,119,.1)}
+h1{font-size:clamp(64px,8.3vw,142px);line-height:.84;letter-spacing:-.077em;margin:0 0 34px;font-weight:680}
+h1 span{color:var(--acid)}
+.hero p{max-width:760px;color:#9aa19c;font-size:clamp(17px,1.45vw,23px);line-height:1.55;letter-spacing:-.02em}
+.actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:34px}
+.btn{display:inline-flex;align-items:center;justify-content:space-between;gap:34px;padding:15px 17px;border:1px solid rgba(255,255,255,.14);border-radius:12px;font-size:12px;font-weight:800;transition:.25s}
+.btn:hover{transform:translateY(-2px)}
+.btn.primary{background:var(--acid);color:#111;border-color:var(--acid)} .btn.ghost{background:rgba(255,255,255,.035)}
+.system{height:min(49vw,640px);aspect-ratio:1;position:relative;z-index:2;justify-self:end}
+.ring{position:absolute;border:1px solid rgba(255,255,255,.12);border-radius:50%;inset:8%}.ring.r2{inset:22%;border-style:dashed;animation:spin 32s linear infinite}.ring.r3{inset:37%;border-color:rgba(217,255,67,.22)}
+.center{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:142px;height:142px;border-radius:50%;display:grid;place-items:center;align-content:center;background:radial-gradient(circle at 40% 30%,#171b19,#0b0d0c 68%);color:#fff;border:1px solid rgba(217,255,67,.22);box-shadow:0 0 0 16px rgba(217,255,67,.035),0 24px 90px rgba(0,0,0,.48);z-index:3}
+
+.center small{font-size:7px;letter-spacing:.17em;color:#68716a;margin-top:4px}
+.sys-node{position:absolute;z-index:4;min-width:94px;padding:11px 12px;border:1px solid rgba(255,255,255,.12);background:rgba(16,19,18,.83);backdrop-filter:blur(12px);border-radius:13px;transition:.25s}
+.sys-node:hover{border-color:var(--acid);transform:translateY(-3px)}
+.sys-node b{display:block;font-size:12px}.sys-node small{display:block;color:#727b74;font-size:9px;text-transform:uppercase;letter-spacing:.1em;margin-top:3px}
+.n1{left:6%;top:17%}.n2{right:4%;top:12%}.n3{right:-2%;top:53%}.n4{left:43%;bottom:0}.n5{left:-1%;bottom:23%}
+.lines{position:absolute;inset:0;width:100%;height:100%;z-index:1}.lines line{stroke:rgba(255,255,255,.12);stroke-width:1;stroke-dasharray:4 8}
+.hero-strip{position:absolute;left:6vw;right:6vw;bottom:31px;display:flex;align-items:center;gap:17px;color:#687069;font-size:9px;font-weight:800;letter-spacing:.13em}
+.hero-strip i{height:1px;background:rgba(255,255,255,.12);flex:1}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+.section{padding:120px 6vw}.paper{background:var(--paper);color:var(--ink)}.dark{background:var(--bg)}
+.label{color:#70756f;margin-bottom:29px}
+.paper .label{color:#777a74}
+.big{font-size:clamp(44px,6vw,88px);line-height:.96;letter-spacing:-.06em;font-weight:670;margin:0}
+.big .muted{color:#898c85}
+.thesis-grid{display:grid;grid-template-columns:1.3fr .7fr;gap:8vw;align-items:start}
+.thesis-copy{color:#676963;line-height:1.72;font-size:16px;padding-top:9px}
+.thesis-copy strong{display:block;color:#161817;font-size:19px;margin-top:24px}
+.trinity{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:rgba(0,0,0,.12);margin-top:90px;border:1px solid rgba(0,0,0,.1)}
+.trinity article{background:var(--paper);padding:28px;min-height:280px}
+.trinity .num{font-size:10px;color:#8b8d87}.trinity .icon{font-size:45px;margin:58px 0 22px}.trinity h3{font-size:25px;margin:0 0 10px;letter-spacing:-.035em}.trinity p{font-size:14px;line-height:1.55;color:#72746e;max-width:320px}
+
+.products-head{display:grid;grid-template-columns:1.25fr .75fr;gap:8vw;align-items:end;margin-bottom:70px}
+.products-head p{color:#8d958f;line-height:1.7;max-width:480px}
+.product-world{min-height:78vh;border-top:1px solid rgba(255,255,255,.1);display:grid;grid-template-columns:.7fr 1.3fr;gap:5vw;align-items:center;padding:70px 0;position:relative}
+.product-world:last-child{border-bottom:1px solid rgba(255,255,255,.1)}
+.product-index{font-size:10px;letter-spacing:.14em;color:#626a64;margin-bottom:26px}.product-status{display:inline-flex;padding:7px 9px;border:1px solid rgba(255,255,255,.13);border-radius:999px;color:#879087;font-size:9px;letter-spacing:.11em;font-weight:800;margin-bottom:22px}
+.product-status.live{color:var(--acid);border-color:rgba(217,255,67,.24)}
+.product-copy h3{font-size:clamp(54px,7vw,108px);letter-spacing:-.07em;line-height:.86;margin:0 0 17px}
+.product-copy .tag{font-size:20px;color:#fff;margin-bottom:17px;font-weight:620}.product-copy>p{color:#8e9790;line-height:1.68;max-width:580px}
+.tags{display:flex;gap:7px;flex-wrap:wrap;margin:26px 0}.tags span{font-size:9px;letter-spacing:.09em;padding:7px 9px;border:1px solid rgba(255,255,255,.12);border-radius:999px;color:#8d958f}
+.open-link{display:inline-flex;gap:22px;font-size:11px;font-weight:800;color:#fff;padding-bottom:5px;border-bottom:1px solid rgba(255,255,255,.22)}
+.visual{height:520px;border:1px solid rgba(255,255,255,.11);border-radius:26px;background:linear-gradient(180deg,#111414,#0d1010);position:relative;overflow:hidden;box-shadow:0 40px 100px rgba(0,0,0,.28)}
+.visual-grid{position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,.035) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.035) 1px,transparent 1px);background-size:42px 42px}
+.twin-ui{position:absolute;inset:22px;display:grid;grid-template-rows:auto 1fr;gap:18px}
+.ui-top{display:flex;justify-content:space-between;align-items:center;color:#737d75;font-size:9px;letter-spacing:.12em}.ui-top b{color:var(--acid)}
+.graph{position:relative}
+.gnode{position:absolute;border:1px solid rgba(255,255,255,.12);background:#151918;border-radius:11px;padding:11px 12px;min-width:110px;box-shadow:0 12px 30px rgba(0,0,0,.25)}
+.gnode small{display:block;font-size:8px;color:#68716a;letter-spacing:.09em;text-transform:uppercase}.gnode b{font-size:11px}
+.ga{left:5%;top:12%}.gb{left:36%;top:32%}.gc{right:6%;top:12%}.gd{right:10%;bottom:12%}.ge{left:8%;bottom:12%}
+.attackline{position:absolute;height:2px;background:linear-gradient(90deg,var(--red),#ff9b78);transform-origin:left center;box-shadow:0 0 12px rgba(255,106,88,.4)}
+.al1{left:21%;top:23%;width:185px;transform:rotate(23deg)}.al2{left:52%;top:42%;width:165px;transform:rotate(-24deg)}.al3{left:59%;top:46%;width:190px;transform:rotate(34deg)}
+.alert{position:absolute;left:28px;bottom:27px;padding:13px 15px;border-radius:12px;background:#19110f;border:1px solid rgba(255,106,88,.28);font-size:10px;color:#d3a097}.alert b{color:var(--red);margin-right:8px}
+.guard-ui{position:absolute;inset:24px;display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.guard-card{background:#121616;border:1px solid rgba(255,255,255,.1);border-radius:16px;padding:17px;display:flex;flex-direction:column;justify-content:space-between}
+.guard-card small{font-size:8px;letter-spacing:.11em;color:#6f7771}.guard-card b{font-size:35px;letter-spacing:-.05em}.guard-card p{font-size:10px;color:#8a928c;margin:0}.guard-card.red b{color:var(--red)}.guard-card.amber b{color:var(--amber)}.guard-card.green b{color:var(--acid)}
+.labs-ui{position:absolute;inset:28px}
+.agent-core{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:125px;height:125px;border-radius:50%;background:rgba(92,240,231,.08);border:1px solid rgba(92,240,231,.35);display:grid;place-items:center;text-align:center;box-shadow:0 0 60px rgba(92,240,231,.08)}
+.agent-core b{color:var(--cyan);font-size:16px}.agent-core small{display:block;color:#6e7772;font-size:8px}
+.labnode{position:absolute;padding:10px 12px;border:1px solid rgba(255,255,255,.12);border-radius:10px;background:#141818;font-size:10px}.ln1{left:5%;top:10%}.ln2{right:5%;top:13%}.ln3{left:7%;bottom:10%}.ln4{right:4%;bottom:12%}
+.edge-ui{position:absolute;inset:0;display:grid;place-items:center}
+.machine{width:58%;height:60%;position:relative}.machine-body{position:absolute;left:25%;top:18%;width:50%;height:43%;border:1px solid rgba(255,255,255,.19);border-radius:22px;background:linear-gradient(160deg,#181c1a,#0e1110)}
+.machine-eye{position:absolute;left:50%;top:36%;transform:translate(-50%,-50%);width:15px;height:15px;border-radius:50%;background:var(--acid);box-shadow:0 0 30px var(--acid)}
+.machine-leg{position:absolute;width:2px;height:36%;background:rgba(255,255,255,.16);top:60%}.ml1{left:35%;transform:rotate(10deg)}.ml2{right:35%;transform:rotate(-10deg)}
+.machine-signal{position:absolute;left:50%;top:2%;width:1px;height:16%;background:linear-gradient(var(--cyan),transparent)}.machine:after{content:"POLICY / IDENTITY / CONTROL";position:absolute;left:50%;bottom:-3%;transform:translateX(-50%);font-size:8px;letter-spacing:.14em;color:#68716a;white-space:nowrap}
+
+.research{background:#e9e8e2;color:#101212}
+.research-grid{display:grid;grid-template-columns:.78fr 1.22fr;gap:7vw}
+.research-list{border-top:1px solid rgba(0,0,0,.14)}
+.research-row{display:grid;grid-template-columns:55px 1fr auto;gap:15px;padding:23px 0;border-bottom:1px solid rgba(0,0,0,.13);align-items:center;transition:.2s}
+.research-row:hover{padding-left:8px}.research-row span:first-child{font-size:10px;color:#999}.research-row b{font-size:23px;letter-spacing:-.035em}.research-row span:last-child{font-size:18px}
+.research-copy p{color:#676963;line-height:1.7;max-width:530px}.research-copy .big{margin-bottom:30px}
+
+.experiments{background:#111414}
+.exp-head{display:flex;justify-content:space-between;gap:30px;align-items:end;margin-bottom:55px}.exp-head p{color:#8c948e;max-width:500px;line-height:1.65}
+.exp-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:13px}
+.exp-card{min-height:330px;border:1px solid rgba(255,255,255,.11);border-radius:22px;padding:25px;position:relative;background:#0e1110;overflow:hidden}
+.exp-card:after{content:"";position:absolute;width:170px;height:170px;border-radius:50%;right:-70px;bottom:-70px;background:var(--acid);opacity:.06;filter:blur(5px)}
+.exp-card .expno{font-size:9px;letter-spacing:.13em;color:#646c66}.exp-card h3{font-size:35px;margin:75px 0 12px;letter-spacing:-.05em}.exp-card p{color:#808982;line-height:1.6;font-size:13px;max-width:510px}.exp-card small{position:absolute;bottom:23px;color:#68716a;font-size:9px;letter-spacing:.1em}
+.company{background:var(--paper);color:#111;padding-top:130px;padding-bottom:130px}
+.company-panel{background:#0d0f0f;color:#fff;border-radius:30px;padding:68px;overflow:hidden;position:relative}
+.company-panel:after{content:"ES";position:absolute;right:-2vw;bottom:-10vw;font-size:30vw;line-height:.8;font-weight:950;color:rgba(255,255,255,.025);letter-spacing:-.12em}
+.company-panel .big{position:relative;z-index:2;max-width:1000px}.company-cols{display:grid;grid-template-columns:1fr 1fr;gap:7vw;max-width:1000px;margin-top:50px;position:relative;z-index:2}.company-cols p{color:#929a94;line-height:1.72}
+.disciplines{display:flex;gap:8px;flex-wrap:wrap;margin-top:48px;position:relative;z-index:2}.disciplines span{font-size:9px;letter-spacing:.11em;padding:8px 10px;border:1px solid rgba(255,255,255,.14);border-radius:999px;color:#a5ada7}
+.contact{background:var(--acid);color:#101211}.contact-inner{max-width:1150px}.contact .big span{color:#566015}.contact p{max-width:680px;color:#434a18;line-height:1.65;font-size:17px}.contact .btn.primary{background:#101211;color:#fff;border-color:#101211}.contact .btn.primary span{color:var(--acid)}
+footer{padding:30px 6vw;background:#080909;border-top:1px solid rgba(255,255,255,.07);display:grid;grid-template-columns:1fr 1fr 1fr;align-items:center;color:#757d77;font-size:10px}.footer-center{text-align:center}.footer-right{text-align:right}
+.reveal{opacity:0;transform:translateY(20px);transition:opacity .75s cubic-bezier(.2,.65,.2,1),transform .75s cubic-bezier(.2,.65,.2,1)}.reveal.in{opacity:1;transform:none}
+@media(max-width:980px){
+  .links{display:none;position:absolute;top:62px;left:0;right:0;background:#0d1010;border:1px solid rgba(255,255,255,.1);padding:15px;border-radius:15px;flex-direction:column;align-items:stretch}.links.open{display:flex}.links a{padding:10px}.menu-btn{display:block}
+  .hero{grid-template-columns:1fr;padding-top:135px;min-height:auto}.system{width:min(90vw,600px);height:auto;justify-self:center;margin-top:35px}.hero-strip{position:relative;left:auto;right:auto;bottom:auto;grid-column:1;margin-top:45px;flex-wrap:wrap}.hero-strip i{min-width:30px}
+  .thesis-grid,.products-head,.product-world,.research-grid{grid-template-columns:1fr}.product-world{min-height:auto;gap:40px}.visual{height:460px}.trinity{grid-template-columns:1fr}.exp-grid{grid-template-columns:1fr}.company-cols{grid-template-columns:1fr}
+}
+@media(max-width:640px){
+  .nav-wrap{left:9px;right:9px;top:8px}.hero,.section{padding-left:22px;padding-right:22px}.hero{padding-top:120px}h1{font-size:56px}.system{transform:scale(.95)}
+  .sys-node{min-width:74px;padding:8px}.n3{right:0}.hero-strip i{display:none}.big{font-size:43px}.trinity article{min-height:220px}.trinity .icon{margin-top:30px}
+  .product-copy h3{font-size:57px}.visual{height:390px}.guard-ui{grid-template-columns:1fr 1fr;inset:14px}.guard-card{padding:12px}.guard-card b{font-size:28px}
+  .exp-head{display:block}.company-panel{padding:35px 24px}.company{padding-left:14px!important;padding-right:14px!important}
+  footer{grid-template-columns:1fr;gap:16px}.footer-center,.footer-right{text-align:left}.cursor-dot{display:none}
+}
+</style>
+</head>
+<body>
+<div class="noise"></div><div class="cursor-dot"></div>
+
+<header class="nav-wrap">
+  <nav class="nav">
+    <a class="brand" href="#top">
+  <span class="brandmark"><span class="nexus-symbol" aria-label="ESNEXUS symbol"><i></i><i></i></span></span>
+  <span class="brand-lockup"><span class="brand-name">ESNEXUS</span><span class="brand-company">TECHNOLOGY COMPANY</span></span>
+</a>
+    <button class="menu-btn" aria-label="Open menu"><i></i><i></i></button>
+    <div class="links">
+      <a href="#thesis">Vision</a>
+      <a href="#products">Products</a>
+      <a href="#research">Research</a>
+      <a href="#experiments">Experiments</a>
+      <a href="#company">Company</a>
+      <a href="#contact" class="cta">Build with us ↗</a>
+    </div>
+  </nav>
+</header>
+
+<main id="top">
+<section class="hero">
+  <div class="grid"></div><div class="glow g1"></div><div class="glow g2"></div>
+  <div class="hero-copy reveal">
+    <div class="kicker"><span class="dot"></span> INDEPENDENT TECHNOLOGY COMPANY · 2026</div>
+    <div class="hero-signature">
+      <span class="signature-line"></span>
+      <span>ESNEXUS / SYSTEM INTELLIGENCE</span>
+    </div>
+    <h1>Understand systems.<br><span>Predict what happens next.</span></h1>
+    <p>ESNEXUS builds intelligent products for increasingly complex digital and physical systems—across software, cybersecurity, AI, cloud, and eventually hardware.</p>
+    <div class="actions">
+      <a href="#products" class="btn primary">Explore our products <span>↗</span></a>
+      <a href="#thesis" class="btn ghost">Our thesis <span>↓</span></a>
+    </div>
+  </div>
+  <div class="system reveal">
+    <div class="ring"></div><div class="ring r2"></div><div class="ring r3"></div>
+    <div class="center brand-core">
+  <span class="nexus-symbol core-symbol" aria-hidden="true"><i></i><i></i></span>
+  <small>ESNEXUS CORE</small>
+</div>
+    <div class="sys-node n1"><b>AI</b><small>agents + reasoning</small></div>
+    <div class="sys-node n2"><b>CLOUD</b><small>infrastructure</small></div>
+    <div class="sys-node n3"><b>SOFTWARE</b><small>applications</small></div>
+    <div class="sys-node n4"><b>CYBER</b><small>trust + security</small></div>
+    <div class="sys-node n5"><b>EDGE</b><small>physical systems</small></div>
+    <svg class="lines" viewBox="0 0 600 600">
+      <line x1="300" y1="300" x2="125" y2="140"/><line x1="300" y1="300" x2="475" y2="120"/>
+      <line x1="300" y1="300" x2="525" y2="340"/><line x1="300" y1="300" x2="300" y2="535"/>
+      <line x1="300" y1="300" x2="80" y2="390"/>
+    </svg>
+  </div>
+  <div class="hero-strip"><span>SOFTWARE</span><i></i><span>CYBERSECURITY</span><i></i><span>AI</span><i></i><span>CLOUD</span><i></i><span>HARDWARE</span></div>
+</section>
+
+<section class="section paper" id="thesis">
+  <div class="label">01 / THE THESIS</div>
+  <div class="thesis-grid">
+    <h2 class="big reveal">We build where systems become <span class="muted">hard to understand.</span></h2>
+    <div class="thesis-copy reveal">
+      <p>Software is becoming autonomous. Infrastructure is becoming interconnected. AI is gaining access to real systems. Physical machines are becoming intelligent.</p>
+      <strong>Complexity creates consequences. ESNEXUS exists to make those consequences understandable.</strong>
+    </div>
+  </div>
+  <div class="trinity">
+    <article class="reveal"><span class="num">01</span><div class="icon">◎</div><h3>Understand</h3><p>Build living models of resources, identities, dependencies, permissions, and behavior.</p></article>
+    <article class="reveal"><span class="num">02</span><div class="icon">⌁</div><h3>Predict</h3><p>Simulate technical changes, attacks, failures, and agent actions before they become real.</p></article>
+    <article class="reveal"><span class="num">03</span><div class="icon">⊘</div><h3>Prevent</h3><p>Explain the consequence, trace the path, and help people intervene before damage occurs.</p></article>
+  </div>
+</section>
+
+<section class="section dark" id="products">
+  <div class="products-head">
+    <div><div class="label">02 / PRODUCTS</div><h2 class="big reveal">One thesis.<br><span class="muted">Multiple systems to improve.</span></h2></div>
+    <p class="reveal">We are building ESNEXUS as a focused product company. Twin is the flagship. The other directions share the same core idea: intelligence that understands complex systems before people are forced to react to them.</p>
+  </div>
+
+  <article class="product-world" id="twin">
+    <div class="product-copy reveal">
+      <div class="product-index">PRODUCT / 01</div><div class="product-status live">FLAGSHIP · IN DEVELOPMENT</div>
+      <h3>Twin</h3><div class="tag">Know what changes before reality does.</div>
+      <p>A system-intelligence platform that models cloud resources, identities, and relationships so engineering teams can understand the consequences of infrastructure changes before production.</p>
+      <div class="tags"><span>GitHub</span><span>Terraform</span><span>AWS</span><span>System Graphs</span><span>Change Simulation</span></div>
+      <a class="open-link" href="#contact">Become a design partner <span>↗</span></a>
+    </div>
+    <div class="visual reveal">
+      <div class="visual-grid"></div>
+      <div class="twin-ui">
+        <div class="ui-top"><span>ESNEXUS / TWIN · PR #184</span><b>SIMULATION COMPLETE</b></div>
+        <div class="graph">
+          <div class="gnode ga"><small>ENTRY</small><b>Internet</b></div>
+          <div class="gnode gb"><small>COMPUTE</small><b>EC2 / web-prod</b></div>
+          <div class="gnode gc"><small>IDENTITY</small><b>prod-app-role</b></div>
+          <div class="gnode gd"><small>DATA</small><b>customer-data</b></div>
+          <div class="gnode ge"><small>CHANGE</small><b>+ s3:GetObject</b></div>
+          <span class="attackline al1"></span><span class="attackline al2"></span><span class="attackline al3"></span>
+        </div>
+      </div>
+      <div class="alert"><b>CRITICAL</b> Proposed change creates a new path to production customer data.</div>
+    </div>
+  </article>
+
+  <article class="product-world">
+    <div class="product-copy reveal">
+      <div class="product-index">PRODUCT / 02</div><div class="product-status">FUTURE DIRECTION</div>
+      <h3>Guard</h3><div class="tag">Security clarity without a security army.</div>
+      <p>Security intelligence for smaller technology companies. Connect identity, cloud, and code; surface the issues that actually require attention and explain what to fix first.</p>
+      <div class="tags"><span>Identity</span><span>Cloud</span><span>Secrets</span><span>Misconfiguration</span><span>Prioritization</span></div>
+    </div>
+    <div class="visual reveal"><div class="visual-grid"></div><div class="guard-ui">
+      <div class="guard-card red"><small>CRITICAL</small><b>03</b><p>Public exposure + privileged access</p></div>
+      <div class="guard-card amber"><small>HIGH</small><b>11</b><p>Excessive identity permissions</p></div>
+      <div class="guard-card green"><small>PROTECTED</small><b>86%</b><p>Controls passing current checks</p></div>
+      <div class="guard-card"><small>NEXT ACTION</small><b>01</b><p>Rotate exposed production secret</p></div>
+    </div></div>
+  </article>
+
+  <article class="product-world">
+    <div class="product-copy reveal">
+      <div class="product-index">PRODUCT / 03</div><div class="product-status">FUTURE DIRECTION</div>
+      <h3>Labs</h3><div class="tag">Break AI before the real world does.</div>
+      <p>A testing environment for agents, RAG, MCP, tools, and permission boundaries. Evaluate how AI systems behave under adversarial inputs before production use.</p>
+      <div class="tags"><span>AI Agents</span><span>RAG</span><span>MCP</span><span>Tool Use</span><span>Adversarial Evaluation</span></div>
+    </div>
+    <div class="visual reveal"><div class="visual-grid"></div><div class="labs-ui">
+      <div class="agent-core"><div><b>AGENT</b><small>under evaluation</small></div></div>
+      <div class="labnode ln1">Prompt injection</div><div class="labnode ln2">Tool boundary</div><div class="labnode ln3">Data isolation</div><div class="labnode ln4">Approval policy</div>
+    </div></div>
+  </article>
+
+  <article class="product-world">
+    <div class="product-copy reveal">
+      <div class="product-index">PRODUCT / 04</div><div class="product-status">LONG-TERM RESEARCH</div>
+      <h3>Edge</h3><div class="tag">Trust for intelligent machines.</div>
+      <p>Long-term research into how AI, robotics, IoT, and edge systems can act with explicit identity, permissions, policies, and human oversight.</p>
+      <div class="tags"><span>Robotics</span><span>IoT</span><span>Edge Computing</span><span>Autonomy</span><span>Physical AI</span></div>
+    </div>
+    <div class="visual reveal"><div class="visual-grid"></div><div class="edge-ui"><div class="machine"><div class="machine-signal"></div><div class="machine-body"><div class="machine-eye"></div></div><div class="machine-leg ml1"></div><div class="machine-leg ml2"></div></div></div></div>
+  </article>
+</section>
+
+<section class="section research" id="research">
+  <div class="research-grid">
+    <div class="research-copy reveal">
+      <div class="label">03 / RESEARCH</div>
+      <h2 class="big">Questions worth <span class="muted">building around.</span></h2>
+      <p>Our research is where product ideas get pressure-tested. We care about system intelligence, attack paths, AI-agent security, autonomy, and the interfaces between software and the physical world.</p>
+    </div>
+    <div class="research-list reveal">
+      <div class="research-row"><span>01</span><b>System intelligence</b><span>↗</span></div>
+      <div class="research-row"><span>02</span><b>Attack & consequence graphs</b><span>↗</span></div>
+      <div class="research-row"><span>03</span><b>AI-agent security</b><span>↗</span></div>
+      <div class="research-row"><span>04</span><b>Autonomous systems</b><span>↗</span></div>
+      <div class="research-row"><span>05</span><b>Human control of intelligent machines</b><span>↗</span></div>
+    </div>
+  </div>
+</section>
+
+<section class="section experiments" id="experiments">
+  <div class="exp-head"><div><div class="label">04 / EXPERIMENTS</div><h2 class="big reveal">Build small.<br><span class="muted">Learn fast.</span></h2></div><p class="reveal">Experiments are not commercial product claims. They are working concepts used to test assumptions before ESNEXUS turns them into products.</p></div>
+  <div class="exp-grid">
+    <article class="exp-card reveal"><div class="expno">EXP / 001</div><h3>Infrastructure Attack Graph</h3><p>Visualize how identity, compute, network exposure, and data access can combine into an exploitable path.</p><small>SIMULATION / CLOUD SECURITY</small></article>
+    <article class="exp-card reveal"><div class="expno">EXP / 002</div><h3>Agent Permission Sandbox</h3><p>Test which actions an AI agent can take under different tool permissions, approval requirements, and user roles.</p><small>AI / AUTHORIZATION</small></article>
+    <article class="exp-card reveal"><div class="expno">EXP / 003</div><h3>RAG Boundary Test</h3><p>Probe whether multi-tenant AI applications can accidentally retrieve or expose information belonging to another tenant.</p><small>AI SECURITY / DATA ISOLATION</small></article>
+    <article class="exp-card reveal"><div class="expno">EXP / 004</div><h3>ActionGuard</h3><p>Our existing physical-AI concept: check agent identity, permission, and operating policy before a supported command reaches connected equipment.</p><small>PHYSICAL AI / POLICY CONTROL</small></article>
+  </div>
+</section>
+
+<section class="section company" id="company">
+  <div class="company-panel reveal">
+    <div class="label">05 / THE COMPANY</div>
+    <h2 class="big">Engineers at heart.<br><span class="muted">Building what should exist next.</span></h2>
+    <div class="company-cols">
+      <p>ESNEXUS began with practical software work: understanding a need, working through complexity, and building something useful. We are evolving that foundation into products of our own.</p>
+      <p>Our focus sits at the intersection of software, cybersecurity, AI, cloud, and eventually hardware. We start narrowly, validate with real people and companies, and expand only when the problem proves itself.</p>
+    </div>
+    <div class="disciplines"><span>SOFTWARE</span><span>CYBERSECURITY</span><span>AI</span><span>CLOUD</span><span>HARDWARE</span></div>
+  </div>
+</section>
+
+<section class="section contact" id="contact">
+  <div class="contact-inner reveal">
+    <div class="label">06 / BUILD WITH US</div>
+    <h2 class="big">We are looking for teams willing to <span>pressure-test the future.</span></h2>
+    <p>If your team works with AWS, Terraform, cloud security, AI agents, or complex infrastructure, we want to understand where visibility breaks down and where ESNEXUS can create real value.</p>
+    <div class="actions"><a class="btn primary" href="mailto:hello@esnexus.com?subject=ESNEXUS%20Design%20Partner">Talk to ESNEXUS <span>↗</span></a></div>
+  </div>
+</section>
+</main>
+
+<footer>
+  <div class="brand">
+  <span class="brandmark"><span class="nexus-symbol" aria-label="ESNEXUS symbol"><i></i><i></i></span></span>
+  <span class="brand-lockup"><span class="brand-name">ESNEXUS</span><span class="brand-company">TECHNOLOGY COMPANY</span></span>
+</div>
+  <div class="footer-center">Understand systems. Predict consequences. Prevent failures.</div>
+  <div class="footer-right">© 2026 ESNEXUS</div>
+</footer>
+
+<script>
+const els=[...document.querySelectorAll('.reveal')];
+const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target)}}),{threshold:.08});
+els.forEach(e=>io.observe(e));
+
+const dot=document.querySelector('.cursor-dot');
+window.addEventListener('mousemove',e=>{dot.style.left=e.clientX+'px';dot.style.top=e.clientY+'px'});
+document.querySelectorAll('a,.sys-node,.research-row,.exp-card').forEach(el=>{
+  el.addEventListener('mouseenter',()=>{dot.style.width='22px';dot.style.height='22px'});
+  el.addEventListener('mouseleave',()=>{dot.style.width='10px';dot.style.height='10px'});
+});
+
+const menu=document.querySelector('.menu-btn'), links=document.querySelector('.links');
+menu.addEventListener('click',()=>links.classList.toggle('open'));
+links.querySelectorAll('a').forEach(a=>a.addEventListener('click',()=>links.classList.remove('open')));
+
+document.querySelectorAll('.visual').forEach(v=>{
+  v.addEventListener('mousemove',e=>{
+    if(innerWidth<900)return;
+    const r=v.getBoundingClientRect(),x=(e.clientX-r.left)/r.width-.5,y=(e.clientY-r.top)/r.height-.5;
+    v.style.transform=`perspective(1000px) rotateX(${(-y*1.7).toFixed(2)}deg) rotateY(${(x*1.7).toFixed(2)}deg)`;
+  });
+  v.addEventListener('mouseleave',()=>v.style.transform='');
+});
+</script>
+</body>
+</html>
